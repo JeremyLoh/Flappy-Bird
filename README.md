@@ -10,6 +10,10 @@ Made using Lua and Love2D.
 
   push is a simple resolution-handling library that allows you to focus on making your game with a fixed resolution.
 
+- `class.lua` code by [Matthias Richter](https://github.com/vrld): https://github.com/vrld/hump/blob/master/class.lua
+
+  Documentation for class library: https://hump.readthedocs.io/en/latest/class.html
+
 [Flappy Bird - Lecture 1 - CS50's Introduction to Game Development 2018](https://www.youtube.com/watch?v=3IdOCxHGMIo)
 
 https://cs50.harvard.edu/games/2018/notes/1/
