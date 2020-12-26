@@ -28,7 +28,11 @@ Aseprite is a pixel-art tool to create 2D animations, sprites, and any kind of g
 - Images (Sprites)
 - Infinite Scrolling
 - "Games are Illusions"
+
   e.g. Camera tricks to change perception of game
+
+  https://www.youtube.com/watch?v=HUgE9L7V4oY
+
 - Procedural Generation
 - State Machines
 - Mouse Input
