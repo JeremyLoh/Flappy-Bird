@@ -1,5 +1,7 @@
 # bird-4: The anti-gravity update
 
+Add ability to jump by pressing the `space` key. A new table was created under `love.keyboard` that keeps track of what key was pressed for each frame.
+
 `Main.lua`
 
 ```Lua
