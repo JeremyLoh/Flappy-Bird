@@ -7,6 +7,7 @@ Class = require "class"
 
 require "Bird"
 require "Pipe"
+require "PipePair"
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 512, 288 -- Fixed game resolution
@@ -22,9 +23,10 @@ local GROUND_SCROLL_SPEED = 60
 local BACKGROUND_LOOPING_POINT = 413
 
 local bird = Bird()
-local pipes = {}
+local pipePairs = {}
 
 local spawnTimer = 0
+local lastPipeY = -PIPE_HEIGHT + math.random(60) + 20
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest', 16)
@@ -61,18 +63,33 @@ function love.update(dt)
     
     spawnTimer = spawnTimer + dt
     if spawnTimer > 2 then
-        table.insert(pipes, Pipe())
+        local topY = -PIPE_HEIGHT + 20
+        local bottomY = math.min(lastPipeY + math.random(-20, 20), VIRTUAL_HEIGHT - 90)
+        -- Limit y values 
+        local y = math.max(topY, bottomY)
+        table.insert(pipePairs, PipePair(y))
         spawnTimer = 0
     end
 
     bird:update(dt)
     
     -- Iterate over all pipes
-    for key, pipe in pairs(pipes) do
-        pipe:update(dt)
+    for key, pair in pairs(pipePairs) do
+        pair:update(dt)
         -- Check for pipe exiting left of screen
-        if pipe.x < -pipe.width then
-            table.remove(pipes, key)
+        -- if pipe.x < -pipe.width then
+        --     table.remove(pipePairs, key)
+        -- end
+    end
+
+    -- Remove any flagged pipes
+    -- Need this second loop, rather than deleting in the previous loop
+    -- Modifying the table in-place without explicit keys will result in skipping the next pipe,
+    -- since all implicit keys (numerical indices) are automatically shifted
+    -- down after a table removal
+    for key, pair in pairs(pipePairs) do
+        if pair.remove then
+            table.remove(pipePairs, key)
         end
     end
     love.keyboard.keysPressed = {}
@@ -81,8 +98,8 @@ end
 function love.draw()
     push:start()
     love.graphics.draw(background, -backgroundScroll, 0)
-    for key, pipe in pairs(pipes) do
-        pipe:render()
+    for key, pair in pairs(pipePairs) do
+        pair:render()
     end
     love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)
     bird:render()
