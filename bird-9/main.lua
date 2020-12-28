@@ -13,6 +13,7 @@ require "StateMachine"
 require "states/BaseState"
 require "states/PlayState" 
 require "states/ScoreState"
+require "states/CountdownState"
 require "states/TitleScreenState"
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
@@ -25,7 +26,7 @@ local ground = love.graphics.newImage("ground.png")
 local groundScroll = 0
 
 local BACKGROUND_SCROLL_SPEED = 25
-local GROUND_SCROLL_SPEED = 60
+local GROUND_SCROLL_SPEED = 100
 local BACKGROUND_LOOPING_POINT = 413
 
 function love.load()
@@ -48,6 +49,7 @@ function love.load()
         ["title"] = function() return TitleScreenState() end,
         ["play"] = function() return PlayState() end,
         ["score"] = function() return ScoreState() end,
+        ["countdown"] = function() return CountdownState() end,
     })
     gStateMachine:change("title")
 

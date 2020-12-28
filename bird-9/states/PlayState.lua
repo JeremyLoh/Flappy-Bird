@@ -17,9 +17,9 @@ end
 
 function PlayState:update(dt) 
     self.spawnTimer = self.spawnTimer + dt
-    if self.spawnTimer > 2 then
+    if self.spawnTimer > 1.5 then
         local topY = -PIPE_HEIGHT + 20
-        local bottomY = math.min(self.lastPipeY + math.random(-20, 20), VIRTUAL_HEIGHT - 90)
+        local bottomY = math.min(self.lastPipeY + math.random(-40, 40), VIRTUAL_HEIGHT - 90)
         -- Limit y values 
         local y = math.max(topY, bottomY)
         table.insert(self.pipePairs, PipePair(y))

@@ -1,7 +1,7 @@
 Pipe = Class{}
 
 local IMAGE = love.graphics.newImage("pipe.png")
-local PIPE_SCROLL = -50
+local PIPE_SCROLL = -100
 -- height of pipe image, globally accessible
 PIPE_HEIGHT = 288
 PIPE_WIDTH = 70
@@ -18,7 +18,7 @@ function Pipe:update(dt)
     self.x = self.x + (PIPE_SCROLL * dt)
 end
 
-function Pipe:render()  
+function Pipe:render()
     -- scale factor of -1 flips sprite 
     -- When flipping on y axis, it shifts Object by its height amount and flip the object. Need to move the object back down by the object height amount. 
     love.graphics.draw(IMAGE, 
