@@ -35,7 +35,7 @@ function Bird:update(dt)
     if love.keyboard.wasPressed('space') then
         self.dy = ANTI_GRAVITY 
     end
-    self.y = self.y + self.dy
+    self.y = math.max(0, self.y + self.dy)
 end
 
 function Bird:render()
