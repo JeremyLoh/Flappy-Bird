@@ -27,6 +27,8 @@ Aseprite is a pixel-art tool to create 2D animations, sprites, and any kind of g
 
 - https://www.aseprite.org/
 
+Fast remove and insert for Lua table - https://stackoverflow.com/questions/4880368/how-to-delete-all-elements-in-a-lua-table
+
 # Learning points
 
 - Images (Sprites)
