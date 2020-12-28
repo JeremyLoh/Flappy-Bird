@@ -12,6 +12,7 @@ function PlayState:init()
     self.pipePairs = {}
     self.lastPipeY = -PIPE_HEIGHT + math.random(60) + 20
     self.spawnTimer = 0
+    self.score = 0
 end
 
 function PlayState:update(dt) 
@@ -27,20 +28,13 @@ function PlayState:update(dt)
     
     self.bird:update(dt)
 
-    -- Reset game if bird touches the ground
-    -- Giving leeway of 3px for the bird's y coordinates
-    if (self.bird.y + self.bird.height - 3) >= (VIRTUAL_HEIGHT - 16) then
-        gStateMachine:change('title')
-    end
-
     -- Iterate over all pipes
     for key, pair in pairs(self.pipePairs) do
         pair:update(dt)
-        -- Check for collision between bird and pipe
-        for k, pipe in pairs(pair.pipes) do
-            if self.bird:collides(pipe) then
-                gStateMachine:change('title')
-            end
+        -- Check for scoring, ignore if pipe is already scored
+        if ((not pair.scored) and (pair.x + PIPE_WIDTH < self.bird.x)) then
+            self.score = self.score + 1
+            pair.scored = true
         end
     end
 
@@ -54,6 +48,25 @@ function PlayState:update(dt)
             table.remove(self.pipePairs, k2)
         end
     end
+
+    -- Reset game if bird touches the ground
+    -- Giving leeway of 3px for the bird's y coordinates
+    if (self.bird.y + self.bird.height - 3) >= (VIRTUAL_HEIGHT - 16) then
+        gStateMachine:change("score", {
+            ["score"] = self.score
+        })
+    end
+
+    -- Check for collision between bird and pipe
+    for key, pair in pairs(self.pipePairs) do
+        for k, pipe in pairs(pair.pipes) do
+            if self.bird:collides(pipe) then
+                gStateMachine:change("score", {
+                    ["score"] = self.score
+                })
+            end
+        end
+    end
 end
 
 function PlayState:render() 
@@ -61,6 +74,9 @@ function PlayState:render()
         pair:render()
     end
     self.bird:render()
+
+    love.graphics.setFont(mediumFont)
+    love.graphics.print("Score: " .. tostring(self.score), 10, 10)
 end
 
 function PlayState:exit() 
