@@ -2,7 +2,7 @@
 
 Flappy Bird is a mobile game developed by Vietnamese video game artist and programmer Dong Nguyen, under his game development company dotGears. The game is a side-scroller where the player controls a bird, attempting to fly between columns of green pipes without hitting them.
 
-Made using Lua and Love2D.
+Made using Lua and Love2D. Background music is from Samuel Truth - Rua https://www.youtube.com/watch?v=5DIdmFcUa4c
 
 # Library used
 
