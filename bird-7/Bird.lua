@@ -16,6 +16,20 @@ function Bird:init()
     self.dy = 0
 end
 
+function Bird:collides(object)
+    -- Use aabb collision detection
+    -- All sides have been shrinked by a constant amount to reduce the bounding box (to give the player more leeway with the collision)
+    shrinkAmount = 5
+    birdLeftBoundary = self.x + shrinkAmount
+    birdRightBoundary = self.x + self.width - shrinkAmount
+    birdTopBoundary = self.y + shrinkAmount
+    birdBottomBoundary = self.y + self.height - shrinkAmount
+    return (birdLeftBoundary < (object.x + object.width) and 
+        (birdRightBoundary) > object.x and 
+        birdTopBoundary < (object.y + object.height) and 
+        birdBottomBoundary > object.y)
+end
+
 function Bird:update(dt)
     self.dy = self.dy + (GRAVITY * dt)
     if love.keyboard.wasPressed('space') then

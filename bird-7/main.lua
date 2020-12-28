@@ -27,6 +27,8 @@ local pipePairs = {}
 
 local spawnTimer = 0
 local lastPipeY = -PIPE_HEIGHT + math.random(60) + 20
+-- scrolling variable to pause the game when we collide with a pipe
+local scrolling = true
 
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest', 16)
@@ -58,38 +60,42 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
-    backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
-    groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
-    
-    spawnTimer = spawnTimer + dt
-    if spawnTimer > 2 then
-        local topY = -PIPE_HEIGHT + 20
-        local bottomY = math.min(lastPipeY + math.random(-20, 20), VIRTUAL_HEIGHT - 90)
-        -- Limit y values 
-        local y = math.max(topY, bottomY)
-        table.insert(pipePairs, PipePair(y))
-        spawnTimer = 0
-    end
+    if scrolling then
+        backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
+        groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+        
+        spawnTimer = spawnTimer + dt
+        if spawnTimer > 2 then
+            local topY = -PIPE_HEIGHT + 20
+            local bottomY = math.min(lastPipeY + math.random(-20, 20), VIRTUAL_HEIGHT - 90)
+            -- Limit y values 
+            local y = math.max(topY, bottomY)
+            table.insert(pipePairs, PipePair(y))
+            spawnTimer = 0
+        end
 
-    bird:update(dt)
-    
-    -- Iterate over all pipes
-    for key, pair in pairs(pipePairs) do
-        pair:update(dt)
-        -- Check for pipe exiting left of screen
-        -- if pipe.x < -pipe.width then
-        --     table.remove(pipePairs, key)
-        -- end
-    end
+        bird:update(dt)
 
-    -- Remove any flagged pipes
-    -- Need this second loop, rather than deleting in the previous loop
-    -- Modifying the table in-place without explicit keys will result in skipping the next pipe,
-    -- since all implicit keys (numerical indices) are automatically shifted
-    -- down after a table removal
-    for key, pair in pairs(pipePairs) do
-        if pair.remove then
-            table.remove(pipePairs, key)
+        -- Iterate over all pipes
+        for key, pair in pairs(pipePairs) do
+            pair:update(dt)
+            -- Check for collision between bird and pipe
+            for k, pipe in pairs(pair.pipes) do
+                if bird:collides(pipe) then
+                    scrolling = false
+                end
+            end
+        end
+
+        -- Remove any flagged pipes
+        -- Need this second loop, rather than deleting in the previous loop
+        -- Modifying the table in-place without explicit keys will result in skipping the next pipe,
+        -- since all implicit keys (numerical indices) are automatically shifted
+        -- down after a table removal
+        for key, pair in pairs(pipePairs) do
+            if pair.remove then
+                table.remove(pipePairs, key)
+            end
         end
     end
     love.keyboard.keysPressed = {}
