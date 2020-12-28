@@ -8,6 +8,11 @@ Class = require "class"
 require "Bird"
 require "Pipe"
 require "PipePair"
+-- Import game state and state machine files
+require "StateMachine"
+require "states/BaseState"
+require "states/PlayState" 
+require "states/TitleScreenState"
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 512, 288 -- Fixed game resolution
@@ -22,14 +27,6 @@ local BACKGROUND_SCROLL_SPEED = 25
 local GROUND_SCROLL_SPEED = 60
 local BACKGROUND_LOOPING_POINT = 413
 
-local bird = Bird()
-local pipePairs = {}
-
-local spawnTimer = 0
-local lastPipeY = -PIPE_HEIGHT + math.random(60) + 20
--- scrolling variable to pause the game when we collide with a pipe
-local scrolling = true
-
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest', 16)
     love.window.setTitle("Flappy Bird")
@@ -38,8 +35,22 @@ function love.load()
         vsync = true,
         resizable = true,
     })
+
+    -- Update game window title
+    love.window.setTitle("Flappy Bird")
+    -- Create fonts
+    bigFont = love.graphics.newFont("fonts/FlappyBirdy.ttf", 32)
+    mediumFont = love.graphics.newFont("fonts/FlappyBirdy.ttf", 20)
+
     -- Seed RNG
     math.randomseed(os.time())
+    -- Initialize state machine with all states
+    gStateMachine = StateMachine ({
+        ["title"] = function() return TitleScreenState() end,
+        ["play"] = function() return PlayState() end,
+    })
+    gStateMachine:change("title")
+
     -- Create own key
     love.keyboard.keysPressed = {}
 end
@@ -60,54 +71,55 @@ function love.keyboard.wasPressed(key)
 end
 
 function love.update(dt)
-    if scrolling then
-        backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
-        groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
-        
-        spawnTimer = spawnTimer + dt
-        if spawnTimer > 2 then
-            local topY = -PIPE_HEIGHT + 20
-            local bottomY = math.min(lastPipeY + math.random(-20, 20), VIRTUAL_HEIGHT - 90)
-            -- Limit y values 
-            local y = math.max(topY, bottomY)
-            table.insert(pipePairs, PipePair(y))
-            spawnTimer = 0
-        end
+    backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
+    groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+    -- if scrolling then
+    --     spawnTimer = spawnTimer + dt
+    --     if spawnTimer > 2 then
+    --         local topY = -PIPE_HEIGHT + 20
+    --         local bottomY = math.min(lastPipeY + math.random(-20, 20), VIRTUAL_HEIGHT - 90)
+    --         -- Limit y values 
+    --         local y = math.max(topY, bottomY)
+    --         table.insert(pipePairs, PipePair(y))
+    --         spawnTimer = 0
+    --     end
 
-        bird:update(dt)
+    --     bird:update(dt)
 
-        -- Iterate over all pipes
-        for key, pair in pairs(pipePairs) do
-            pair:update(dt)
-            -- Check for collision between bird and pipe
-            for k, pipe in pairs(pair.pipes) do
-                if bird:collides(pipe) then
-                    scrolling = false
-                end
-            end
-        end
+    --     -- Iterate over all pipes
+    --     for key, pair in pairs(pipePairs) do
+    --         pair:update(dt)
+    --         -- Check for collision between bird and pipe
+    --         for k, pipe in pairs(pair.pipes) do
+    --             if bird:collides(pipe) then
+    --                 scrolling = false
+    --             end
+    --         end
+    --     end
 
-        -- Remove any flagged pipes
-        -- Need this second loop, rather than deleting in the previous loop
-        -- Modifying the table in-place without explicit keys will result in skipping the next pipe,
-        -- since all implicit keys (numerical indices) are automatically shifted
-        -- down after a table removal
-        for key, pair in pairs(pipePairs) do
-            if pair.remove then
-                table.remove(pipePairs, key)
-            end
-        end
-    end
+    --     -- Remove any flagged pipes
+    --     -- Need this second loop, rather than deleting in the previous loop
+    --     -- Modifying the table in-place without explicit keys will result in skipping the next pipe,
+    --     -- since all implicit keys (numerical indices) are automatically shifted
+    --     -- down after a table removal
+    --     for key, pair in pairs(pipePairs) do
+    --         if pair.remove then
+    --             table.remove(pipePairs, key)
+    --         end
+    --     end
+    -- end
+    gStateMachine:update(dt)
     love.keyboard.keysPressed = {}
 end
 
 function love.draw()
     push:start()
     love.graphics.draw(background, -backgroundScroll, 0)
-    for key, pair in pairs(pipePairs) do
-        pair:render()
-    end
+    gStateMachine:render()
+    -- for key, pair in pairs(pipePairs) do
+    --     pair:render()
+    -- end
+    -- bird:render()
     love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)
-    bird:render()
     push:finish()
 end
