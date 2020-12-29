@@ -7,25 +7,46 @@
 
 PlayState = Class{__includes = BaseState}
 
-function PlayState:init()
-    self.bird = Bird()
-    self.pipePairs = {}
-    self.lastPipeY = -PIPE_HEIGHT + math.random(60) + 20
-    self.spawnTimer = 0
-    self.score = 0
+function PlayState:enter(enterParams)
+    if enterParams then
+        self.bird = enterParams["bird"]
+        self.pipePairs = enterParams["pipePairs"]
+        self.lastPipeY = enterParams["lastPipeY"]
+        love.graphics.printf(tostring(enterParams["lastPipeY"]),0,100,VIRTUAL_WIDTH,"center")
+        self.spawnTimer = enterParams["spawnTimer"]
+        self.score = enterParams["score"]   
+    else
+        self.bird = Bird()
+        self.pipePairs = {}
+        self.lastPipeY = -PIPE_HEIGHT + math.random(60) + 20
+        self.spawnTimer = 0
+        self.score = 0
+    end
 end
 
 --[[
     How to generate random float in lua?
     https://stackoverflow.com/a/18209644
 
-    Generates a random interval from min to max (inclusive)
+    Generates a random interval from [min, max)
 ]]
 function getRandomSpawnInterval(min, max)
     return min + math.random() * (max - min)
 end
 
 function PlayState:update(dt) 
+    -- Check for pause button
+    if love.keyboard.wasPressed("p") then
+        params = {
+            ["bird"] = self.bird,
+            ["pipePairs"] = self.pipePairs,
+            ["lastPipeY"] = self.lastPipeY,
+            ["spawnTimer"] = self.spawnTimer,
+            ["score"] = self.score,
+        }
+        gStateMachine:change("pause", params)
+    end
+
     self.spawnTimer = self.spawnTimer + dt
     spawnInterval = getRandomSpawnInterval(1.3, 1.5)
     if self.spawnTimer > spawnInterval then
@@ -93,11 +114,4 @@ function PlayState:render()
 
     love.graphics.setFont(mediumFont)
     love.graphics.print("Score: " .. tostring(self.score), 10, 10)
-end
-
-function PlayState:exit() 
-    -- Remove all items in the table
-    for k, p in pairs(self.pipePairs) do
-        self.pipePairs[k] = nil
-    end
 end

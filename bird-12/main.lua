@@ -14,6 +14,7 @@ require "states/BaseState"
 require "states/PlayState" 
 require "states/ScoreState"
 require "states/CountdownState"
+require "states/PauseState"
 require "states/TitleScreenState"
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
@@ -51,7 +52,7 @@ function love.load()
     }
 
     backgroundMusic = love.audio.newSource("sounds/Samuel Truth - Black & White - 02 Rua.mp3", "stream")
-    backgroundMusic:setVolume(0.7)
+    backgroundMusic:setVolume(0.5)
     backgroundMusic:setLooping(true)
     backgroundMusic:play()
 
@@ -63,6 +64,7 @@ function love.load()
         ["play"] = function() return PlayState() end,
         ["score"] = function() return ScoreState() end,
         ["countdown"] = function() return CountdownState() end,
+        ["pause"] = function() return PauseState() end,
     })
     gStateMachine:change("title")
 
