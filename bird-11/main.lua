@@ -68,6 +68,7 @@ function love.load()
 
     -- Create own key
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed = {}
 end
 
 function love.resize(width, height)
@@ -81,8 +82,20 @@ function love.keypressed(key, scancode, isrepeat)
     end
 end
 
+function love.mousepressed(x, y, button, istouch, presses)
+    primaryMouseButton = 1
+    -- touchscreen touch-press or mouse click detected
+    if button == primaryMouseButton or istouch then
+        love.mouse.buttonsPressed["primary"] = true
+    end
+end
+
 function love.keyboard.wasPressed(key)
     return love.keyboard.keysPressed[key]
+end
+
+function love.mouse.wasPressed(button)
+    return love.mouse.buttonsPressed[button]
 end
 
 function love.update(dt)
@@ -90,6 +103,7 @@ function love.update(dt)
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
     gStateMachine:update(dt)
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed = {}
 end
 
 function love.draw()

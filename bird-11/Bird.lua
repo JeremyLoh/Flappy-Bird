@@ -32,9 +32,9 @@ end
 
 function Bird:update(dt)
     self.dy = self.dy + (GRAVITY * dt)
-    if love.keyboard.wasPressed('space') then
+    if love.keyboard.wasPressed('space') or love.mouse.wasPressed("primary") then
         sounds["jump"]:play()
-        self.dy = ANTI_GRAVITY 
+        self.dy = ANTI_GRAVITY
     end
     self.y = math.max(0, self.y + self.dy)
 end
