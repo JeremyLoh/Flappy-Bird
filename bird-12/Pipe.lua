@@ -1,6 +1,6 @@
 Pipe = Class{}
 
-local IMAGE = love.graphics.newImage("pipe.png")
+local IMAGE = love.graphics.newImage("assets/pipe.png")
 local PIPE_SCROLL = -100
 -- height of pipe image, globally accessible
 PIPE_HEIGHT = 288

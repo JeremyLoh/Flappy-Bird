@@ -21,9 +21,9 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
 VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 512, 288 -- Fixed game resolution
 
 -- Load images into memory from files, to draw onto the screen
-local background = love.graphics.newImage("background.png")
+local background = love.graphics.newImage("assets/background.png")
 local backgroundScroll = 0
-local ground = love.graphics.newImage("ground.png")
+local ground = love.graphics.newImage("assets/ground.png")
 local groundScroll = 0
 
 local BACKGROUND_SCROLL_SPEED = 25
