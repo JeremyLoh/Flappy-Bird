@@ -4,8 +4,8 @@
 
 Bird = Class{}
 
-local GRAVITY = 8
-local ANTI_GRAVITY = -3
+local GRAVITY = 800
+local ANTI_GRAVITY = -220
 
 function Bird:init()
     self.image = love.graphics.newImage("bird.png")
@@ -36,7 +36,7 @@ function Bird:update(dt)
         sounds["jump"]:play()
         self.dy = ANTI_GRAVITY
     end
-    self.y = math.max(0, self.y + self.dy)
+    self.y = math.max(0, self.y + self.dy * dt)
 end
 
 function Bird:render()
