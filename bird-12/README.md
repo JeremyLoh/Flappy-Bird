@@ -228,7 +228,7 @@ function PlayState:render()
 end
 ```
 
-1. Award players a "medal" based on their score, using images
+## Award players a "medal" based on their score, using images
 
 The medals are created using Aseprite: https://www.aseprite.org/
 
