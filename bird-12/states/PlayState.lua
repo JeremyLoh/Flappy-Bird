@@ -15,9 +15,20 @@ function PlayState:init()
     self.score = 0
 end
 
+--[[
+    How to generate random float in lua?
+    https://stackoverflow.com/a/18209644
+
+    Generates a random interval from min to max (inclusive)
+]]
+function getRandomSpawnInterval(min, max)
+    return min + math.random() * (max - min)
+end
+
 function PlayState:update(dt) 
     self.spawnTimer = self.spawnTimer + dt
-    if self.spawnTimer > 1.5 then
+    spawnInterval = getRandomSpawnInterval(1.3, 1.5)
+    if self.spawnTimer > spawnInterval then
         local topY = -PIPE_HEIGHT + 20
         local bottomY = math.min(self.lastPipeY + math.random(-40, 40), VIRTUAL_HEIGHT - 90)
         -- Limit y values 
